@@ -4426,6 +4426,11 @@ static irqreturn_t dwc3_check_event_buf(struct dwc3_event_buffer *evt)
 		dwc3_writel(dwc->regs, DWC3_GEVNTCOUNT(0), count);
 		dbg_event(0xFF, "NO_PULLUP", count);
 		return IRQ_HANDLED;
+
+	if (count > evt->length) {
+		dev_err_ratelimited(dwc->dev, "invalid count(%u) > evt->length(%u)\n",
+			count, evt->length);
+		return IRQ_NONE;
 	}
 
 	evt->count = count;
